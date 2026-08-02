@@ -18,7 +18,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar store de estado com Signals (lote ativo, estoque restante, `isLoading`, `isProcessingPayment`)
 
 ## Sprint 3: Vitrine do Evento
-- [ ] Montar organismo `Hero` com identidade visual, data, local e atrações (mobile-first, `flex-col`)
+- [x] Montar organismo `Hero` com identidade visual, data, local e atrações (mobile-first, `flex-col`)
 - [ ] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
 - [ ] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
 - [ ] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
