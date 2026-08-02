@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, defer, of } from 'rxjs';
 import { EVENTO_MOCK, GATILHO_ESCASSEZ, LOTES_MOCK } from '../mocks/dados-mock';
+import { comLatencia } from '../mocks/latencia';
 import { Evento, Lote, LoteVitrine } from '../models';
 
 /**
@@ -14,16 +15,23 @@ export class TicketMockService {
   private lotes: Lote[] = LOTES_MOCK.map((lote) => ({ ...lote }));
 
   obterEvento(): Observable<Evento> {
-    return of(EVENTO_MOCK);
+    return of(EVENTO_MOCK).pipe(comLatencia());
   }
 
+  /**
+   * `defer` garante que o snapshot do estoque seja tirado no momento da
+   * inscrição — e não quando o Observable foi criado —, então uma releitura
+   * feita depois de uma compra já enxerga a virada de lote.
+   */
   obterLotes(): Observable<readonly LoteVitrine[]> {
-    return of(this.instantaneoDosLotes());
+    return defer(() => of(this.instantaneoDosLotes())).pipe(comLatencia());
   }
 
   /** Lote que está vendendo agora — `null` quando tudo esgotou. */
   obterLoteAtivo(): Observable<LoteVitrine | null> {
-    return of(this.instantaneoDosLotes().find((lote) => lote.status === 'ativo') ?? null);
+    return defer(() =>
+      of(this.instantaneoDosLotes().find((lote) => lote.status === 'ativo') ?? null),
+    ).pipe(comLatencia());
   }
 
   /** Snapshot ordenado dos lotes, já enriquecido com os dados de urgência da UI. */
