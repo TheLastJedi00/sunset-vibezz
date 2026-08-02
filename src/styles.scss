@@ -1,4 +1,89 @@
 @use 'tailwindcss';
 
-/* Sunset Vibezz — fundações da identidade visual.
-   Regras globais inabdicáveis apenas. Tudo mais é utility-first (Tailwind). */
+/* =========================================================================
+   Sunset Vibezz — Ibiza Flashback Experience
+   Fundações da identidade visual. Aqui vivem apenas a paleta, a tipografia
+   e as regras globais inabdicáveis. Todo o resto é utility-first (Tailwind).
+   ========================================================================= */
+
+@theme {
+  /* Paleta oficial */
+  --color-base: #00000a;
+  --color-primary: #310d33;
+  --color-accent: #f87e3a;
+
+  /* Derivadas — profundidade e superfícies de vidro */
+  --color-base-soft: #0a0a16;
+  --color-primary-deep: #1c0720;
+  --color-primary-light: #55225a;
+  --color-accent-soft: #ffa96d;
+  --color-accent-deep: #d15c1c;
+
+  /* Texto */
+  --color-ink: #f5f1ef;
+  --color-ink-muted: #a99fb0;
+
+  /* Tipografia */
+  --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+:root {
+  /* Espelho da paleta para consumo fora do Tailwind (SVG, canvas, meta) */
+  --sv-base: var(--color-base);
+  --sv-primary: var(--color-primary);
+  --sv-accent: var(--color-accent);
+
+  /* Superfície de vidro padrão do design system */
+  --sv-glass-bg: rgb(0 0 10 / 0.55);
+  --sv-glass-border: rgb(245 241 239 / 0.08);
+
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--color-base);
+  scroll-behavior: smooth;
+  /* Evita o "pulo" de layout quando o modal de checkout trava o scroll */
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Brilho de sunset ancorado no topo, sem custo de imagem */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(248 126 58 / 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 15% 5%, rgb(49 13 51 / 0.55), transparent 65%);
+  background-attachment: fixed;
+}
+
+/* Tipografia de display: títulos respiram menos e pesam mais */
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+/* Foco visível e consistente em toda a aplicação (acessibilidade) */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+/* Não deixa o autofill do navegador quebrar o tema escuro do checkout */
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-ink);
+  box-shadow: 0 0 0 1000px var(--color-primary-deep) inset;
+  caret-color: var(--color-ink);
+}

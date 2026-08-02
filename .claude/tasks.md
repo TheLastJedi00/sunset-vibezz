@@ -4,7 +4,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 
 ## Sprint 1: Fundação e Design System
 - [x] Instalar e configurar Tailwind CSS no build do Angular (`styles.scss` + PostCSS)
-- [ ] Definir fundações visuais no `styles.scss`: paleta no `:root` (`#00000A`, `#310D33`, `#F87E3A`), tipografia e background global
+- [x] Definir fundações visuais no `styles.scss`: paleta no `:root` (`#00000A`, `#310D33`, `#F87E3A`), tipografia e background global
 - [ ] Criar utilitários de animação `animate-enter` / `animate-leave` (fade + slide) como camada global reutilizável
 - [ ] Estruturar pastas do Design Atômico (`atoms`, `molecules`, `organisms`, `templates`, `pages`) com componentes inline TS-only
 - [ ] Criar átomos base: `Button` (com estado `loading`/`disabled`), `Badge` e `Skeleton` pulsante
