@@ -14,12 +14,17 @@ import {
   CheckoutRequest,
   CheckoutResponse,
   CompradorRegistro,
+  ConsultaCompradores,
+  DesempenhoLote,
   EnderecoPorCep,
   Evento,
   Ingresso,
   Lote,
   LoteVitrine,
   MotivoFalha,
+  PaginaCompradores,
+  RegiaoCompradores,
+  ResumoVendas,
 } from '../models';
 
 /** Resultado da reserva síncrona de estoque feita antes de "cobrar". */
@@ -102,6 +107,120 @@ export class TicketMockService {
       comLatencia(LATENCIA_CRITICA, this.fator),
       map((reserva) => this.concluir(reserva, requisicao)),
     );
+  }
+
+  // --- Painel do produtor --------------------------------------------------
+
+  /** Números consolidados do evento para o dashboard. */
+  obterResumoVendas(): Observable<ResumoVendas> {
+    return defer(() => {
+      const ativo = this.lotes.find((lote) => lote.status === 'ativo') ?? null;
+      const ingressosVendidos = this.lotes.reduce((soma, l) => soma + l.quantidadeVendida, 0);
+      const capacidade = this.lotes.reduce((soma, l) => soma + l.quantidadeTotal, 0);
+      const receitaBrutaCentavos = this.lotes.reduce(
+        (soma, l) => soma + l.quantidadeVendida * (l.precoCentavos + l.taxaCentavos),
+        0,
+      );
+
+      return of<ResumoVendas>({
+        ingressosVendidos,
+        ingressosDisponiveis: capacidade - ingressosVendidos,
+        receitaBrutaCentavos,
+        ticketMedioCentavos: ingressosVendidos
+          ? Math.round(receitaBrutaCentavos / ingressosVendidos)
+          : 0,
+        loteAtivoNome: ativo?.nome ?? null,
+        loteAtivoDisponivel: ativo ? ativo.quantidadeTotal - ativo.quantidadeVendida : 0,
+        atualizadoEm: new Date().toISOString(),
+      });
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /** Desempenho lote a lote — mostra onde a receita foi feita. */
+  obterDesempenhoLotes(): Observable<readonly DesempenhoLote[]> {
+    return defer(() =>
+      of(
+        this.lotes
+          .slice()
+          .sort((a, b) => a.ordem - b.ordem)
+          .map<DesempenhoLote>((lote) => ({
+            loteId: lote.id,
+            nome: lote.nome,
+            vendidos: lote.quantidadeVendida,
+            total: lote.quantidadeTotal,
+            receitaCentavos: lote.quantidadeVendida * (lote.precoCentavos + lote.taxaCentavos),
+            status: lote.status,
+          })),
+      ),
+    ).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /**
+   * Inteligência geográfica: cruza o CEP/bairro informado no checkout para
+   * mostrar de onde vem o público — é o que baratear a mídia da próxima edição.
+   */
+  obterRegioes(): Observable<readonly RegiaoCompradores[]> {
+    return defer(() => {
+      const totalIngressos = this.compradores.reduce((soma, c) => soma + c.ingressosComprados, 0);
+      const porRegiao = new Map<string, RegiaoCompradores>();
+
+      for (const comprador of this.compradores) {
+        const chave = `${comprador.bairro}|${comprador.cidade}|${comprador.uf}`;
+        const atual = porRegiao.get(chave);
+
+        porRegiao.set(chave, {
+          bairro: comprador.bairro,
+          cidade: comprador.cidade,
+          uf: comprador.uf,
+          compradores: (atual?.compradores ?? 0) + 1,
+          ingressos: (atual?.ingressos ?? 0) + comprador.ingressosComprados,
+          receitaCentavos: (atual?.receitaCentavos ?? 0) + comprador.totalGastoCentavos,
+          participacao: 0,
+        });
+      }
+
+      const regioes = [...porRegiao.values()]
+        .map((regiao) => ({
+          ...regiao,
+          participacao: totalIngressos
+            ? Math.round((regiao.ingressos / totalIngressos) * 1000) / 10
+            : 0,
+        }))
+        .sort((a, b) => b.ingressos - a.ingressos);
+
+      return of<readonly RegiaoCompradores[]>(regioes);
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /**
+   * Base de compradores para fidelização e remarketing.
+   * Busca e paginação acontecem "no servidor" (aqui, no mock) — a UI nunca
+   * recebe a base inteira, do mesmo jeito que será com o Supabase.
+   */
+  obterCompradores(consulta: ConsultaCompradores): Observable<PaginaCompradores> {
+    return defer(() => {
+      const termo = consulta.busca.trim().toLowerCase();
+      const filtrados = termo
+        ? this.compradores.filter((c) =>
+            [c.nome, c.email, c.whatsapp, c.bairro, c.cidade].some((campo) =>
+              campo.toLowerCase().includes(termo),
+            ),
+          )
+        : this.compradores.slice();
+
+      const ordenados = filtrados.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+      const tamanho = Math.max(1, consulta.tamanhoPagina);
+      const totalPaginas = Math.max(1, Math.ceil(ordenados.length / tamanho));
+      const pagina = Math.min(Math.max(1, consulta.pagina), totalPaginas);
+      const inicio = (pagina - 1) * tamanho;
+
+      return of<PaginaCompradores>({
+        itens: ordenados.slice(inicio, inicio + tamanho),
+        total: ordenados.length,
+        pagina,
+        totalPaginas,
+      });
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
   }
 
   /** Snapshot ordenado dos lotes, já enriquecido com os dados de urgência da UI. */

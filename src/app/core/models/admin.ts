@@ -1,3 +1,5 @@
+import { CompradorRegistro } from './comprador';
+
 /** Cabeçalho do dashboard do produtor. */
 export interface ResumoVendas {
   readonly ingressosVendidos: number;
@@ -19,6 +21,20 @@ export interface RegiaoCompradores {
   readonly receitaCentavos: number;
   /** Participação sobre o total de ingressos vendidos (0–100). */
   readonly participacao: number;
+}
+
+/** Consulta paginada da base de compradores. */
+export interface ConsultaCompradores {
+  readonly busca: string;
+  readonly pagina: number;
+  readonly tamanhoPagina: number;
+}
+
+export interface PaginaCompradores {
+  readonly itens: readonly CompradorRegistro[];
+  readonly total: number;
+  readonly pagina: number;
+  readonly totalPaginas: number;
 }
 
 /** Desempenho por lote exibido no dashboard. */
