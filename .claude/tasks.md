@@ -26,7 +26,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Validar responsividade e hierarquia visual da vitrine no mobile
 
 ## Sprint 4: Checkout e Pagamento
-- [ ] Criar template de checkout em etapas curtas com navegação entre steps
+- [x] Criar template de checkout em etapas curtas com navegação entre steps
 - [ ] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
 - [ ] Criar seleção de método de pagamento (PIX e Cartão de Crédito) com mock de processamento
 - [ ] Implementar modal de processamento com `backdrop-blur`, `animate-enter` e spinner
