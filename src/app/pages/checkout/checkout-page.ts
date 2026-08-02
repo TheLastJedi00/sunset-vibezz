@@ -51,6 +51,7 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
       [passoAtual]="passo()"
       [titulo]="titulo()"
       [subtitulo]="subtitulo()"
+      [bloqueado]="store.processandoPagamento()"
       (voltar)="voltarEtapa()"
     >
       @let lote = store.loteAtivo();
@@ -135,6 +136,9 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
         rodape
         size="lg"
         [variant]="temLoteAtivo() ? 'accent' : 'outline'"
+        [loading]="store.processandoPagamento()"
+        [disabled]="store.carregando()"
+        loadingLabel="Processando..."
         (pressed)="acaoDoRodape()"
       >
         {{ rotuloDoRodape() }}

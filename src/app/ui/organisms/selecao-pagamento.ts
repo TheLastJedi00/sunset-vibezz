@@ -7,6 +7,7 @@ import {
   effect,
   inject,
   input,
+  OnInit,
   output,
   signal,
 } from '@angular/core';
@@ -158,7 +159,7 @@ const validadeFutura: ValidatorFn = (controle: AbstractControl) => {
     </div>
   `,
 })
-export class SelecaoPagamento {
+export class SelecaoPagamento implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly totalCentavos = input.required<number>();
@@ -195,6 +196,11 @@ export class SelecaoPagamento {
       return { parcelas, valorCentavos: Math.round(this.totalCentavos() / parcelas) };
     }),
   );
+
+  /** PIX já vem selecionado: o pai precisa saber disso sem depender de clique. */
+  ngOnInit(): void {
+    this.emitir();
+  }
 
   constructor() {
     this.aplicarMascaras();

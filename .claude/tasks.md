@@ -30,7 +30,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
 - [x] Criar seleção de método de pagamento (PIX e Cartão de Crédito) com mock de processamento
 - [x] Implementar modal de processamento com `backdrop-blur`, `animate-enter` e spinner
-- [ ] Aplicar bloqueio de interação anti-duplicidade nos botões (`opacity-50 cursor-not-allowed pointer-events-none` + "Processando...")
+- [x] Aplicar bloqueio de interação anti-duplicidade nos botões (`opacity-50 cursor-not-allowed pointer-events-none` + "Processando...")
 - [ ] Criar tela de confirmação com ingresso digital e QR Code mockado
 - [ ] Tratar cenários de erro/recusa de pagamento com feedback visual
 

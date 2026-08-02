@@ -12,9 +12,11 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
     <header class="sticky top-0 z-30 border-b border-ink/10 bg-night/80 backdrop-blur-xl">
       <div class="mx-auto flex w-full max-w-xl flex-col gap-4 px-5 py-4">
         <div class="flex items-center justify-between gap-4">
+          <!-- Durante o pagamento o retorno é travado: voltar aqui duplica cobrança -->
           <button
             type="button"
-            class="text-xs font-semibold uppercase tracking-[0.14em] text-ink-muted transition-colors hover:text-ink"
+            [class]="classesVoltar()"
+            [disabled]="bloqueado()"
             (click)="voltar.emit()"
           >
             ← Voltar
@@ -76,8 +78,18 @@ export class CheckoutTemplate {
   readonly subtitulo = input('');
   /** Desliga o rodapé nas telas que já resolvem a ação no corpo (confirmação). */
   readonly comRodape = input(true);
+  /** Trava a navegação enquanto um pagamento está em voo. */
+  readonly bloqueado = input(false);
 
   readonly voltar = output<void>();
 
   protected readonly temRodape = computed(() => this.comRodape());
+
+  protected readonly classesVoltar = computed(() => {
+    const base = 'text-xs font-semibold uppercase tracking-[0.14em] transition-colors';
+
+    return this.bloqueado()
+      ? `${base} text-ink-muted opacity-50 cursor-not-allowed pointer-events-none`
+      : `${base} text-ink-muted hover:text-ink cursor-pointer`;
+  });
 }
