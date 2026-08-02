@@ -22,7 +22,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
 - [x] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
 - [x] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
-- [ ] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
+- [x] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
 - [ ] Validar responsividade e hierarquia visual da vitrine no mobile
 
 ## Sprint 4: Checkout e Pagamento

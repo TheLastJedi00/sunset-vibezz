@@ -8,12 +8,26 @@ import { BarraCompra } from '../../ui/organisms/barra-compra';
 import { Header } from '../../ui/organisms/header';
 import { Hero } from '../../ui/organisms/hero';
 import { HeroSkeleton } from '../../ui/organisms/hero-skeleton';
+import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
 
 @Component({
   selector: 'app-vitrine-page',
-  imports: [Header, Hero, HeroSkeleton, LoteCard, LoteCardSkeleton, BarraCompra],
+  imports: [
+    Header,
+    Hero,
+    HeroSkeleton,
+    LoteCard,
+    LoteCardSkeleton,
+    BarraCompra,
+    LoadingFullscreen,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <app-loading-fullscreen
+      [visivel]="store.carregando()"
+      mensagem="Conferindo a disponibilidade dos lotes..."
+    />
+
     <app-header />
 
     <main class="mx-auto flex w-full max-w-2xl grow flex-col pb-24">
