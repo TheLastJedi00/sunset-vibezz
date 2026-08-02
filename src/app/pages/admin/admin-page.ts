@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { BilheteriaStore } from '../../core/state/bilheteria-store';
+import { PainelStore } from '../../core/state/painel-store';
+import { DashboardVendas } from '../../ui/organisms/dashboard-vendas';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
 import { AdminTemplate, SecaoAdmin } from '../../ui/templates/admin-template';
 
@@ -11,10 +12,10 @@ const SECOES: readonly SecaoAdmin[] = [
 
 @Component({
   selector: 'app-admin-page',
-  imports: [AdminTemplate, LoadingFullscreen],
+  imports: [AdminTemplate, LoadingFullscreen, DashboardVendas],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-loading-fullscreen [visivel]="store.carregando()" mensagem="Consolidando as vendas..." />
+    <app-loading-fullscreen [visivel]="painel.carregando()" mensagem="Consolidando as vendas..." />
 
     <app-admin-template
       [secoes]="secoes"
@@ -28,7 +29,12 @@ const SECOES: readonly SecaoAdmin[] = [
 
       @switch (secao()) {
         @case ('visao-geral') {
-          <p class="text-sm text-ink-muted">Dashboard de vendas (próxima tarefa).</p>
+          <app-dashboard-vendas
+            [resumo]="painel.resumo()"
+            [desempenho]="painel.desempenho()"
+            [ocupacao]="painel.ocupacao()"
+            [carregando]="painel.carregando()"
+          />
         }
         @case ('regioes') {
           <p class="text-sm text-ink-muted">Inteligência geográfica (próxima tarefa).</p>
@@ -41,7 +47,7 @@ const SECOES: readonly SecaoAdmin[] = [
   `,
 })
 export class AdminPage implements OnInit {
-  protected readonly store = inject(BilheteriaStore);
+  protected readonly painel = inject(PainelStore);
 
   protected readonly secoes = SECOES;
   protected readonly secao = signal<string>('visao-geral');
@@ -54,6 +60,6 @@ export class AdminPage implements OnInit {
   );
 
   ngOnInit(): void {
-    this.store.carregarVitrine();
+    this.painel.carregarDashboard();
   }
 }

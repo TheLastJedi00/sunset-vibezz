@@ -14,12 +14,14 @@ import {
   CheckoutRequest,
   CheckoutResponse,
   CompradorRegistro,
+  DesempenhoLote,
   EnderecoPorCep,
   Evento,
   Ingresso,
   Lote,
   LoteVitrine,
   MotivoFalha,
+  ResumoVendas,
 } from '../models';
 
 /** Resultado da reserva síncrona de estoque feita antes de "cobrar". */
@@ -102,6 +104,52 @@ export class TicketMockService {
       comLatencia(LATENCIA_CRITICA, this.fator),
       map((reserva) => this.concluir(reserva, requisicao)),
     );
+  }
+
+  // --- Painel do produtor --------------------------------------------------
+
+  /** Números consolidados do evento para o dashboard. */
+  obterResumoVendas(): Observable<ResumoVendas> {
+    return defer(() => {
+      const ativo = this.lotes.find((lote) => lote.status === 'ativo') ?? null;
+      const ingressosVendidos = this.lotes.reduce((soma, l) => soma + l.quantidadeVendida, 0);
+      const capacidade = this.lotes.reduce((soma, l) => soma + l.quantidadeTotal, 0);
+      const receitaBrutaCentavos = this.lotes.reduce(
+        (soma, l) => soma + l.quantidadeVendida * (l.precoCentavos + l.taxaCentavos),
+        0,
+      );
+
+      return of<ResumoVendas>({
+        ingressosVendidos,
+        ingressosDisponiveis: capacidade - ingressosVendidos,
+        receitaBrutaCentavos,
+        ticketMedioCentavos: ingressosVendidos
+          ? Math.round(receitaBrutaCentavos / ingressosVendidos)
+          : 0,
+        loteAtivoNome: ativo?.nome ?? null,
+        loteAtivoDisponivel: ativo ? ativo.quantidadeTotal - ativo.quantidadeVendida : 0,
+        atualizadoEm: new Date().toISOString(),
+      });
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /** Desempenho lote a lote — mostra onde a receita foi feita. */
+  obterDesempenhoLotes(): Observable<readonly DesempenhoLote[]> {
+    return defer(() =>
+      of(
+        this.lotes
+          .slice()
+          .sort((a, b) => a.ordem - b.ordem)
+          .map<DesempenhoLote>((lote) => ({
+            loteId: lote.id,
+            nome: lote.nome,
+            vendidos: lote.quantidadeVendida,
+            total: lote.quantidadeTotal,
+            receitaCentavos: lote.quantidadeVendida * (lote.precoCentavos + lote.taxaCentavos),
+            status: lote.status,
+          })),
+      ),
+    ).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
   }
 
   /** Snapshot ordenado dos lotes, já enriquecido com os dados de urgência da UI. */
