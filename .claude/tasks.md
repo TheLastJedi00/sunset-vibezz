@@ -26,13 +26,13 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Validar responsividade e hierarquia visual da vitrine no mobile
 
 ## Sprint 4: Checkout e Pagamento
-- [ ] Criar template de checkout em etapas curtas com navegação entre steps
-- [ ] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
-- [ ] Criar seleção de método de pagamento (PIX e Cartão de Crédito) com mock de processamento
-- [ ] Implementar modal de processamento com `backdrop-blur`, `animate-enter` e spinner
-- [ ] Aplicar bloqueio de interação anti-duplicidade nos botões (`opacity-50 cursor-not-allowed pointer-events-none` + "Processando...")
-- [ ] Criar tela de confirmação com ingresso digital e QR Code mockado
-- [ ] Tratar cenários de erro/recusa de pagamento com feedback visual
+- [x] Criar template de checkout em etapas curtas com navegação entre steps
+- [x] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
+- [x] Criar seleção de método de pagamento (PIX e Cartão de Crédito) com mock de processamento
+- [x] Implementar modal de processamento com `backdrop-blur`, `animate-enter` e spinner
+- [x] Aplicar bloqueio de interação anti-duplicidade nos botões (`opacity-50 cursor-not-allowed pointer-events-none` + "Processando...")
+- [x] Criar tela de confirmação com ingresso digital e QR Code mockado
+- [x] Tratar cenários de erro/recusa de pagamento com feedback visual
 
 ## Sprint 5: Painel Administrativo
 - [ ] Criar layout base do painel admin com aside animado (`animate-enter`/`animate-leave`)

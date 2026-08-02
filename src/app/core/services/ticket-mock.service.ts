@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, defer, map, of } from 'rxjs';
 import {
+  CEPS_MOCK,
+  CEP_PADRAO,
   COMPRADORES_MOCK,
   EVENTO_MOCK,
   GATILHO_ESCASSEZ,
@@ -12,6 +14,7 @@ import {
   CheckoutRequest,
   CheckoutResponse,
   CompradorRegistro,
+  EnderecoPorCep,
   Evento,
   Ingresso,
   Lote,
@@ -63,6 +66,26 @@ export class TicketMockService {
     return defer(() =>
       of(this.instantaneoDosLotes().find((lote) => lote.status === 'ativo') ?? null),
     ).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /**
+   * Consulta de CEP (papel do ViaCEP no MVP real).
+   * Preenche bairro/cidade/UF sozinho e é o que alimenta a inteligência
+   * geográfica do painel do produtor.
+   */
+  consultarCep(cep: string): Observable<EnderecoPorCep> {
+    const digitos = cep.replace(/\D/g, '');
+
+    return defer(() => {
+      const prefixo = digitos.slice(0, 5);
+      const encontrado = CEPS_MOCK.get(prefixo);
+
+      return of<EnderecoPorCep>({
+        cep: digitos,
+        ...(encontrado ?? CEP_PADRAO),
+        encontrado: Boolean(encontrado),
+      });
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
   }
 
   /**

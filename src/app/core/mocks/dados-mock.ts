@@ -120,6 +120,18 @@ const DISTRIBUICAO_REGIOES: readonly DistribuicaoRegiao[] = [
   { bairro: 'Centro', cidade: 'Petrópolis', uf: 'RJ', cepPrefixo: '25610', compradores: 3, ingressos: 5 },
 ];
 
+/** Base de consulta de CEP do mock — no lugar do ViaCEP. */
+export const CEPS_MOCK: ReadonlyMap<string, { bairro: string; cidade: string; uf: string }> =
+  new Map(
+    DISTRIBUICAO_REGIOES.map((regiao) => [
+      regiao.cepPrefixo,
+      { bairro: regiao.bairro, cidade: regiao.cidade, uf: regiao.uf },
+    ]),
+  );
+
+/** Devolvido quando o CEP digitado não está na base do mock. */
+export const CEP_PADRAO = { bairro: 'Centro', cidade: 'Rio de Janeiro', uf: 'RJ' };
+
 const NOMES = [
   'Ana Beatriz Moraes', 'Rafael Nunes', 'Carolina Prado', 'Diego Almeida',
   'Juliana Rocha', 'Thiago Vasconcelos', 'Marina Castro', 'Lucas Ferraz',
