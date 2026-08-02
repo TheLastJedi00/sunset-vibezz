@@ -1,5 +1,14 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { Comprador } from '../../core/models';
 import { BilheteriaStore } from '../../core/state/bilheteria-store';
@@ -10,6 +19,7 @@ import {
   FormularioComprador,
 } from '../../ui/organisms/formulario-comprador';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
+import { EstadoPagamento, SelecaoPagamento } from '../../ui/organisms/selecao-pagamento';
 import { CheckoutTemplate } from '../../ui/templates/checkout-template';
 
 const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
@@ -21,6 +31,7 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
     CheckoutTemplate,
     SeletorQuantidade,
     FormularioComprador,
+    SelecaoPagamento,
     Button,
     LoadingFullscreen,
   ],
@@ -94,7 +105,18 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
           }
 
           @case (3) {
-            <p class="text-sm text-ink-muted">Seleção de pagamento (próxima tarefa).</p>
+            <app-selecao-pagamento
+              [totalCentavos]="store.totalSelecionadoCentavos()"
+              [revelarErros]="tentouAvancar()"
+              (mudou)="registrarPagamento($event)"
+            />
+
+            <div class="flex items-center justify-between gap-4 rounded-2xl bg-ink/[0.03] px-4 py-3">
+              <span class="text-sm text-ink-muted">Total</span>
+              <span class="font-display text-2xl font-black tabular-nums text-accent">
+                {{ store.totalSelecionadoCentavos() / 100 | currency: 'BRL' }}
+              </span>
+            </div>
           }
         }
 
@@ -119,10 +141,12 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
 export class CheckoutPage implements OnInit {
   protected readonly store = inject(BilheteriaStore);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly passos = PASSOS;
   protected readonly passo = signal(1);
   protected readonly comprador = signal<Comprador | null>(null);
+  protected readonly pagamento = signal<EstadoPagamento | null>(null);
   protected readonly formularioValido = signal(false);
   /** Só revela os erros do formulário depois da primeira tentativa de avançar. */
   protected readonly tentouAvancar = signal(false);
@@ -171,6 +195,10 @@ export class CheckoutPage implements OnInit {
     }
   }
 
+  protected registrarPagamento(estado: EstadoPagamento): void {
+    this.pagamento.set(estado);
+  }
+
   protected avancarEtapa(): void {
     // Etapa 2 só libera com os dados essenciais preenchidos e válidos.
     if (this.passo() === 2 && !this.formularioValido()) {
@@ -178,11 +206,38 @@ export class CheckoutPage implements OnInit {
       return;
     }
 
+    if (this.passo() === this.passos.length) {
+      this.pagar();
+      return;
+    }
+
+    this.tentouAvancar.set(false);
+    this.passo.update((atual) => atual + 1);
+  }
+
+  /** Dispara o checkout mockado com tudo que foi coletado nas etapas. */
+  private pagar(): void {
+    const comprador = this.comprador();
+    const pagamento = this.pagamento();
+    const lote = this.store.loteAtivo();
+
+    if (!comprador || !lote || !pagamento?.valido) {
+      this.tentouAvancar.set(true);
+      return;
+    }
+
     this.tentouAvancar.set(false);
 
-    if (this.passo() < this.passos.length) {
-      this.passo.update((atual) => atual + 1);
-    }
+    this.store
+      .finalizarCompra({
+        loteId: lote.id,
+        quantidade: this.store.quantidade(),
+        comprador,
+        metodo: pagamento.metodo,
+        cartao: pagamento.cartao ?? undefined,
+      })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 
   protected voltarEtapa(): void {
