@@ -26,6 +26,115 @@
   /* Tipografia */
   --font-display: 'Outfit', 'Segoe UI', system-ui, sans-serif;
   --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* Ciclo de vida padronizado: modais, asides, header e loadings */
+  --animate-enter: sv-enter 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-leave: sv-leave 200ms cubic-bezier(0.4, 0, 1, 1) both;
+  --animate-enter-fade: sv-enter-fade 240ms ease-out both;
+  --animate-leave-fade: sv-leave-fade 180ms ease-in both;
+  --animate-enter-right: sv-enter-right 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-leave-right: sv-leave-right 220ms cubic-bezier(0.4, 0, 1, 1) both;
+  --animate-shimmer: sv-shimmer 1.6s linear infinite;
+  --animate-breathe: sv-breathe 2.4s ease-in-out infinite;
+}
+
+/* --- Keyframes do ciclo de vida ------------------------------------------ */
+
+/* Entrada padrão: fade + slide vertical curto (mobile-first, sentido de subida) */
+@keyframes sv-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1rem, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes sv-leave {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 0.75rem, 0) scale(0.98);
+  }
+}
+
+/* Fade puro: overlays e backdrops, onde o deslocamento atrapalha */
+@keyframes sv-enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sv-leave-fade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Lateral: drawers e asides */
+@keyframes sv-enter-right {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sv-leave-right {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* Skeletons: varredura de brilho no lugar do pulse chapado */
+@keyframes sv-shimmer {
+  from {
+    background-position: -160% 0;
+  }
+  to {
+    background-position: 160% 0;
+  }
+}
+
+@keyframes sv-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Respeita quem desativou animações no sistema */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 :root {
