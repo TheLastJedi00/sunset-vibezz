@@ -8,7 +8,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar utilitários de animação `animate-enter` / `animate-leave` (fade + slide) como camada global reutilizável
 - [x] Estruturar pastas do Design Atômico (`atoms`, `molecules`, `organisms`, `templates`, `pages`) com componentes inline TS-only
 - [x] Criar átomos base: `Button` (com estado `loading`/`disabled`), `Badge` e `Skeleton` pulsante
-- [ ] Configurar rotas iniciais (`/` vitrine, `/checkout`, `/admin`) com lazy loading
+- [x] Configurar rotas iniciais (`/` vitrine, `/checkout`, `/admin`) com lazy loading
 
 ## Sprint 2: Camada de Dados Mockada
 - [ ] Criar contratos tipados (`Evento`, `Lote`, `Comprador`, `CheckoutRequest`, `CheckoutResponse`, `Ingresso`)
