@@ -23,7 +23,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
 - [x] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
 - [x] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
-- [ ] Validar responsividade e hierarquia visual da vitrine no mobile
+- [x] Validar responsividade e hierarquia visual da vitrine no mobile
 
 ## Sprint 4: Checkout e Pagamento
 - [ ] Criar template de checkout em etapas curtas com navegação entre steps

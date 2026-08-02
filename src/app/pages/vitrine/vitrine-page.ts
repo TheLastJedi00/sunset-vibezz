@@ -30,7 +30,8 @@ import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
 
     <app-header />
 
-    <main class="mx-auto flex w-full max-w-2xl grow flex-col pb-24">
+    <!-- pb generoso: a barra fixa de compra não pode cobrir o último lote -->
+    <main class="mx-auto flex w-full max-w-2xl grow flex-col pb-48">
       @if (store.evento(); as evento) {
         <app-hero [evento]="evento" />
       } @else {
