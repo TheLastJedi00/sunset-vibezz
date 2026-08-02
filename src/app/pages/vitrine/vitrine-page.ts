@@ -3,13 +3,15 @@ import { Router } from '@angular/router';
 import { LoteVitrine } from '../../core/models';
 import { BilheteriaStore } from '../../core/state/bilheteria-store';
 import { LoteCard } from '../../ui/molecules/lote-card';
+import { LoteCardSkeleton } from '../../ui/molecules/lote-card-skeleton';
 import { BarraCompra } from '../../ui/organisms/barra-compra';
 import { Header } from '../../ui/organisms/header';
 import { Hero } from '../../ui/organisms/hero';
+import { HeroSkeleton } from '../../ui/organisms/hero-skeleton';
 
 @Component({
   selector: 'app-vitrine-page',
-  imports: [Header, Hero, LoteCard, BarraCompra],
+  imports: [Header, Hero, HeroSkeleton, LoteCard, LoteCardSkeleton, BarraCompra],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-header />
@@ -17,6 +19,8 @@ import { Hero } from '../../ui/organisms/hero';
     <main class="mx-auto flex w-full max-w-2xl grow flex-col pb-24">
       @if (store.evento(); as evento) {
         <app-hero [evento]="evento" />
+      } @else {
+        <app-hero-skeleton />
       }
 
       <section id="ingressos" class="flex flex-col gap-4 px-5 pt-8">
@@ -26,6 +30,11 @@ import { Hero } from '../../ui/organisms/hero';
 
         @for (lote of store.lotes(); track lote.id) {
           <app-lote-card [lote]="lote" (comprar)="irParaCheckout($event)" />
+        } @empty {
+          <!-- Mesma quantidade de cartões que o mock devolve: nada salta ao chegar -->
+          @for (posicao of esqueletosDeLote; track posicao) {
+            <app-lote-card-skeleton [destaque]="posicao === 2" />
+          }
         }
 
         @if (store.esgotado()) {
@@ -55,6 +64,8 @@ import { Hero } from '../../ui/organisms/hero';
 export class VitrinePage implements OnInit {
   protected readonly store = inject(BilheteriaStore);
   private readonly router = inject(Router);
+
+  protected readonly esqueletosDeLote = [1, 2, 3, 4];
 
   ngOnInit(): void {
     this.store.carregarVitrine();
