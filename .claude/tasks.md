@@ -19,7 +19,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 
 ## Sprint 3: Vitrine do Evento
 - [x] Montar organismo `Hero` com identidade visual, data, local e atrações (mobile-first, `flex-col`)
-- [ ] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
+- [x] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
 - [ ] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
 - [ ] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
 - [ ] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
