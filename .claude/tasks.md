@@ -18,12 +18,12 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar store de estado com Signals (lote ativo, estoque restante, `isLoading`, `isProcessingPayment`)
 
 ## Sprint 3: Vitrine do Evento
-- [ ] Montar organismo `Hero` com identidade visual, data, local e atrações (mobile-first, `flex-col`)
-- [ ] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
-- [ ] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
-- [ ] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
-- [ ] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
-- [ ] Validar responsividade e hierarquia visual da vitrine no mobile
+- [x] Montar organismo `Hero` com identidade visual, data, local e atrações (mobile-first, `flex-col`)
+- [x] Criar molécula `LoteCard` exibindo lote ativo, preço e estado esgotado/bloqueado
+- [x] Implementar alerta de escassez ("Últimos ingressos deste lote") baseado no estoque restante
+- [x] Aplicar Skeleton Screens no carregamento inicial da vitrine (evento + cards de lote)
+- [x] Implementar loading fullscreen glassmorphism no `onInit` da página conforme diretriz do clauderc
+- [x] Validar responsividade e hierarquia visual da vitrine no mobile
 
 ## Sprint 4: Checkout e Pagamento
 - [ ] Criar template de checkout em etapas curtas com navegação entre steps
