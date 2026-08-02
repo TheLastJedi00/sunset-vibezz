@@ -7,7 +7,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Definir fundações visuais no `styles.scss`: paleta no `:root` (`#00000A`, `#310D33`, `#F87E3A`), tipografia e background global
 - [x] Criar utilitários de animação `animate-enter` / `animate-leave` (fade + slide) como camada global reutilizável
 - [x] Estruturar pastas do Design Atômico (`atoms`, `molecules`, `organisms`, `templates`, `pages`) com componentes inline TS-only
-- [ ] Criar átomos base: `Button` (com estado `loading`/`disabled`), `Badge` e `Skeleton` pulsante
+- [x] Criar átomos base: `Button` (com estado `loading`/`disabled`), `Badge` e `Skeleton` pulsante
 - [ ] Configurar rotas iniciais (`/` vitrine, `/checkout`, `/admin`) com lazy loading
 
 ## Sprint 2: Camada de Dados Mockada

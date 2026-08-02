@@ -7,13 +7,15 @@
    ========================================================================= */
 
 @theme {
-  /* Paleta oficial */
-  --color-base: #00000a;
+  /* Paleta oficial
+     Obs.: o background global se chama `night` (e não `base`) porque `text-base`
+     já é a escala de tamanho de fonte do Tailwind — o nome colidiria. */
+  --color-night: #00000a;
   --color-primary: #310d33;
   --color-accent: #f87e3a;
 
   /* Derivadas — profundidade e superfícies de vidro */
-  --color-base-soft: #0a0a16;
+  --color-night-soft: #0a0a16;
   --color-primary-deep: #1c0720;
   --color-primary-light: #55225a;
   --color-accent-soft: #ffa96d;
@@ -139,7 +141,7 @@
 
 :root {
   /* Espelho da paleta para consumo fora do Tailwind (SVG, canvas, meta) */
-  --sv-base: var(--color-base);
+  --sv-night: var(--color-night);
   --sv-primary: var(--color-primary);
   --sv-accent: var(--color-accent);
 
@@ -151,7 +153,7 @@
 }
 
 html {
-  background-color: var(--color-base);
+  background-color: var(--color-night);
   scroll-behavior: smooth;
   /* Evita o "pulo" de layout quando o modal de checkout trava o scroll */
   scrollbar-gutter: stable;
@@ -160,7 +162,7 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background-color: var(--color-base);
+  background-color: var(--color-night);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
