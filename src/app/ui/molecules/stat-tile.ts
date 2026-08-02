@@ -23,7 +23,7 @@ import { Skeleton } from '../atoms/skeleton';
         <app-skeleton class="mt-1 h-3 w-20" radius="rounded-full" />
       } @else {
         <span
-          class="font-display text-3xl font-black tabular-nums"
+          class="font-display text-[clamp(1.5rem,6vw,1.875rem)] font-black tabular-nums break-words"
           [class]="destaque() ? 'text-accent' : 'text-ink'"
         >
           {{ valor() }}

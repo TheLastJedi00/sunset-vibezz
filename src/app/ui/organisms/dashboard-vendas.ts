@@ -16,7 +16,8 @@ import { StatTile } from '../molecules/stat-tile';
   host: { class: 'block' },
   template: `
     <div class="flex flex-col gap-5">
-      <div class="grid grid-cols-2 gap-3">
+      <!-- Uma coluna no mobile (valores em BRL não cabem em 2 colunas a 390px) -->
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <app-stat-tile
           rotulo="Ingressos vendidos"
           [valor]="resumo()?.ingressosVendidos?.toString() ?? '—'"
