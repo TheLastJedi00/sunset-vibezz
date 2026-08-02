@@ -19,6 +19,7 @@ import {
   FormularioComprador,
 } from '../../ui/organisms/formulario-comprador';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
+import { ModalProcessamento } from '../../ui/organisms/modal-processamento';
 import { EstadoPagamento, SelecaoPagamento } from '../../ui/organisms/selecao-pagamento';
 import { CheckoutTemplate } from '../../ui/templates/checkout-template';
 
@@ -34,6 +35,7 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
     SelecaoPagamento,
     Button,
     LoadingFullscreen,
+    ModalProcessamento,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -41,6 +43,8 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
       [visivel]="store.carregando()"
       mensagem="Reservando sua vaga no lote atual..."
     />
+
+    <app-modal-processamento [visivel]="store.processandoPagamento()" />
 
     <app-checkout-template
       [passos]="passos"
