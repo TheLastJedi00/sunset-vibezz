@@ -27,7 +27,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 
 ## Sprint 4: Checkout e Pagamento
 - [x] Criar template de checkout em etapas curtas com navegação entre steps
-- [ ] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
+- [x] Implementar formulário reativo de dados do comprador (Nome, E-mail, WhatsApp, CEP/Bairro) com validações
 - [ ] Criar seleção de método de pagamento (PIX e Cartão de Crédito) com mock de processamento
 - [ ] Implementar modal de processamento com `backdrop-blur`, `animate-enter` e spinner
 - [ ] Aplicar bloqueio de interação anti-duplicidade nos botões (`opacity-50 cursor-not-allowed pointer-events-none` + "Processando...")

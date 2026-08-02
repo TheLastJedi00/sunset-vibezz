@@ -1,9 +1,14 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { Comprador } from '../../core/models';
 import { BilheteriaStore } from '../../core/state/bilheteria-store';
 import { Button } from '../../ui/atoms/button';
 import { SeletorQuantidade } from '../../ui/molecules/seletor-quantidade';
+import {
+  EstadoFormulario,
+  FormularioComprador,
+} from '../../ui/organisms/formulario-comprador';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
 import { CheckoutTemplate } from '../../ui/templates/checkout-template';
 
@@ -11,7 +16,14 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
 
 @Component({
   selector: 'app-checkout-page',
-  imports: [CurrencyPipe, CheckoutTemplate, SeletorQuantidade, Button, LoadingFullscreen],
+  imports: [
+    CurrencyPipe,
+    CheckoutTemplate,
+    SeletorQuantidade,
+    FormularioComprador,
+    Button,
+    LoadingFullscreen,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-loading-fullscreen
@@ -74,7 +86,11 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
           }
 
           @case (2) {
-            <p class="text-sm text-ink-muted">Formulário do comprador (próxima tarefa).</p>
+            <app-formulario-comprador
+              [valorInicial]="comprador()"
+              [revelarErros]="tentouAvancar()"
+              (mudou)="registrarFormulario($event)"
+            />
           }
 
           @case (3) {
@@ -106,6 +122,10 @@ export class CheckoutPage implements OnInit {
 
   protected readonly passos = PASSOS;
   protected readonly passo = signal(1);
+  protected readonly comprador = signal<Comprador | null>(null);
+  protected readonly formularioValido = signal(false);
+  /** Só revela os erros do formulário depois da primeira tentativa de avançar. */
+  protected readonly tentouAvancar = signal(false);
 
   protected readonly titulo = computed(() =>
     ({
@@ -144,7 +164,22 @@ export class CheckoutPage implements OnInit {
     this.avancarEtapa();
   }
 
+  protected registrarFormulario(estado: EstadoFormulario): void {
+    this.formularioValido.set(estado.valido);
+    if (estado.dados) {
+      this.comprador.set(estado.dados);
+    }
+  }
+
   protected avancarEtapa(): void {
+    // Etapa 2 só libera com os dados essenciais preenchidos e válidos.
+    if (this.passo() === 2 && !this.formularioValido()) {
+      this.tentouAvancar.set(true);
+      return;
+    }
+
+    this.tentouAvancar.set(false);
+
     if (this.passo() < this.passos.length) {
       this.passo.update((atual) => atual + 1);
     }
@@ -155,6 +190,7 @@ export class CheckoutPage implements OnInit {
       this.irParaVitrine();
       return;
     }
+    this.tentouAvancar.set(false);
     this.passo.update((atual) => atual - 1);
   }
 
