@@ -19,6 +19,7 @@ import {
   FormularioComprador,
 } from '../../ui/organisms/formulario-comprador';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
+import { IngressoDigital } from '../../ui/organisms/ingresso-digital';
 import { ModalProcessamento } from '../../ui/organisms/modal-processamento';
 import { EstadoPagamento, SelecaoPagamento } from '../../ui/organisms/selecao-pagamento';
 import { CheckoutTemplate } from '../../ui/templates/checkout-template';
@@ -36,6 +37,7 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
     Button,
     LoadingFullscreen,
     ModalProcessamento,
+    IngressoDigital,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -46,6 +48,47 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
 
     <app-modal-processamento [visivel]="store.processandoPagamento()" />
 
+    @if (pedidoAprovado(); as pedido) {
+      <main class="mx-auto flex w-full max-w-xl grow animate-enter flex-col gap-6 px-5 py-10">
+        <div class="flex flex-col items-center gap-3 text-center">
+          <span
+            class="flex size-14 items-center justify-center rounded-full border border-emerald-400/40 bg-emerald-500/12 text-2xl text-emerald-300"
+            aria-hidden="true"
+          >
+            ✓
+          </span>
+          <h1 class="font-display text-2xl font-black tracking-tight">Pagamento aprovado!</h1>
+          <p class="text-sm text-ink-muted">
+            Enviamos {{ pedido.quantidade === 1 ? 'seu ingresso' : 'seus ingressos' }} para
+            <span class="text-ink">{{ pedido.emailEnviadoPara }}</span
+            >. Apresente o QR Code na portaria.
+          </p>
+          <p class="text-xs text-ink-muted">Pedido {{ pedido.pedidoId }}</p>
+        </div>
+
+        @if (pedido.pixCopiaECola; as pix) {
+          <div class="flex flex-col gap-3 rounded-3xl border border-ink/12 bg-ink/[0.03] p-5">
+            <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-ink-muted">
+              PIX copia e cola (simulado)
+            </span>
+            <p class="break-all rounded-2xl bg-night/60 px-4 py-3 font-mono text-[0.7rem] text-ink-muted">
+              {{ pix }}
+            </p>
+            <app-button variant="outline" (pressed)="copiarPix(pix)">
+              {{ pixCopiado() ? 'Código copiado!' : 'Copiar código PIX' }}
+            </app-button>
+          </div>
+        }
+
+        @for (ingresso of pedido.ingressos; track ingresso.id) {
+          <app-ingresso-digital [ingresso]="ingresso" [evento]="store.evento()" />
+        }
+
+        <app-button size="lg" variant="outline" (pressed)="novaCompra()">
+          Voltar para o evento
+        </app-button>
+      </main>
+    } @else {
     <app-checkout-template
       [passos]="passos"
       [passoAtual]="passo()"
@@ -144,6 +187,7 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
         {{ rotuloDoRodape() }}
       </app-button>
     </app-checkout-template>
+    }
   `,
 })
 export class CheckoutPage implements OnInit {
@@ -174,6 +218,14 @@ export class CheckoutPage implements OnInit {
       3: 'Pagamento processado direto na conta do produtor.',
     })[this.passo()] ?? '',
   );
+
+  protected readonly pixCopiado = signal(false);
+
+  /** Só existe depois de uma compra concluída — troca o checkout pela confirmação. */
+  protected readonly pedidoAprovado = computed(() => {
+    const pedido = this.store.ultimoPedido();
+    return pedido?.sucesso ? pedido : null;
+  });
 
   protected readonly temLoteAtivo = computed(() => this.store.loteAtivo() !== null);
 
@@ -259,5 +311,20 @@ export class CheckoutPage implements OnInit {
 
   protected irParaVitrine(): void {
     this.router.navigate(['/']);
+  }
+
+  /** Limpa o pedido para que a vitrine não reabra a confirmação. */
+  protected novaCompra(): void {
+    this.store.limparPedido();
+    this.passo.set(1);
+    this.pixCopiado.set(false);
+    this.irParaVitrine();
+  }
+
+  protected copiarPix(codigo: string): void {
+    navigator.clipboard?.writeText(codigo).then(
+      () => this.pixCopiado.set(true),
+      () => this.pixCopiado.set(false),
+    );
   }
 }
