@@ -14,7 +14,7 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar contratos tipados (`Evento`, `Lote`, `Comprador`, `CheckoutRequest`, `CheckoutResponse`, `Ingresso`)
 - [x] Implementar `TicketMockService` com dados fixos do evento e dos lotes
 - [x] Adicionar latência artificial nos mocks (800–1200ms em buscas, 2000–3000ms em checkout) via `delay` do RxJS
-- [ ] Implementar no mock a regra de virada automática de lote e o bloqueio anti-duplicação de estoque
+- [x] Implementar no mock a regra de virada automática de lote e o bloqueio anti-duplicação de estoque
 - [ ] Criar store de estado com Signals (lote ativo, estoque restante, `isLoading`, `isProcessingPayment`)
 
 ## Sprint 3: Vitrine do Evento

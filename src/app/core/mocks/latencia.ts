@@ -1,4 +1,14 @@
+import { InjectionToken } from '@angular/core';
 import { MonoTypeOperatorFunction, delay } from 'rxjs';
+
+/**
+ * Multiplicador global da latência simulada.
+ * Vale 1 na aplicação; testes injetam 0 para rodar sem espera.
+ */
+export const FATOR_LATENCIA = new InjectionToken<number>('FATOR_LATENCIA', {
+  providedIn: 'root',
+  factory: () => 1,
+});
 
 export interface FaixaLatencia {
   readonly min: number;
@@ -20,6 +30,9 @@ export function sortearLatencia({ min, max }: FaixaLatencia): number {
  * Atraso intencional aplicado aos mocks. Existe para que os estados de
  * carregamento sejam projetados com tempos realistas antes do backend entrar.
  */
-export function comLatencia<T>(faixa: FaixaLatencia = LATENCIA_BUSCA): MonoTypeOperatorFunction<T> {
-  return (origem) => origem.pipe(delay(sortearLatencia(faixa)));
+export function comLatencia<T>(
+  faixa: FaixaLatencia = LATENCIA_BUSCA,
+  fator = 1,
+): MonoTypeOperatorFunction<T> {
+  return (origem) => origem.pipe(delay(Math.round(sortearLatencia(faixa) * fator)));
 }
