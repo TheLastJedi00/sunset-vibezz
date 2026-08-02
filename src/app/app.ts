@@ -1,12 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="min-h-dvh flex flex-col">
+      <router-outlet />
+    </div>
+  `,
 })
-export class App {
-  protected readonly title = signal('sunset-vibezz');
-}
+export class App {}
