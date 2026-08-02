@@ -1,7 +1,12 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, finalize, forkJoin } from 'rxjs';
-import { DesempenhoLote, RegiaoCompradores, ResumoVendas } from '../models';
+import {
+  DesempenhoLote,
+  PaginaCompradores,
+  RegiaoCompradores,
+  ResumoVendas,
+} from '../models';
 import { TicketMockService } from '../services/ticket-mock.service';
 
 /**
@@ -17,15 +22,24 @@ export class PainelStore {
   private readonly resumoSig = signal<ResumoVendas | null>(null);
   private readonly desempenhoSig = signal<readonly DesempenhoLote[]>([]);
   private readonly regioesSig = signal<readonly RegiaoCompradores[]>([]);
+  private readonly clientesSig = signal<PaginaCompradores | null>(null);
+  private readonly buscaSig = signal('');
   private readonly carregandoSig = signal(false);
   private readonly carregandoRegioesSig = signal(false);
+  private readonly carregandoClientesSig = signal(false);
   private readonly erroSig = signal<string | null>(null);
+
+  /** Tamanho de página do painel — o mock respeita como se fosse o backend. */
+  private static readonly TAMANHO_PAGINA = 8;
 
   readonly resumo = this.resumoSig.asReadonly();
   readonly desempenho = this.desempenhoSig.asReadonly();
   readonly regioes = this.regioesSig.asReadonly();
+  readonly clientes = this.clientesSig.asReadonly();
+  readonly busca = this.buscaSig.asReadonly();
   readonly carregando = this.carregandoSig.asReadonly();
   readonly carregandoRegioes = this.carregandoRegioesSig.asReadonly();
+  readonly carregandoClientes = this.carregandoClientesSig.asReadonly();
   readonly erro = this.erroSig.asReadonly();
 
   /** Percentual da capacidade total já vendida — usado na barra do dashboard. */
@@ -63,6 +77,27 @@ export class PainelStore {
         this.resumoSig.set(resumo);
         this.desempenhoSig.set(desempenho);
       });
+  }
+
+  /** Busca a página atual da base de clientes (busca e paginação server-side). */
+  carregarClientes(opcoes: { busca?: string; pagina?: number } = {}): void {
+    const busca = opcoes.busca ?? this.buscaSig();
+    const pagina = opcoes.pagina ?? 1;
+
+    this.buscaSig.set(busca);
+    this.carregandoClientesSig.set(true);
+
+    this.api
+      .obterCompradores({ busca, pagina, tamanhoPagina: PainelStore.TAMANHO_PAGINA })
+      .pipe(
+        catchError(() => {
+          this.erroSig.set('Não conseguimos carregar a base de clientes agora.');
+          return EMPTY;
+        }),
+        finalize(() => this.carregandoClientesSig.set(false)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((resultado) => this.clientesSig.set(resultado));
   }
 
   /** Carregado sob demanda: só quem abre a seção de regiões paga a espera. */

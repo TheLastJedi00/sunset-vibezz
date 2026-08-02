@@ -14,6 +14,7 @@ import {
   CheckoutRequest,
   CheckoutResponse,
   CompradorRegistro,
+  ConsultaCompradores,
   DesempenhoLote,
   EnderecoPorCep,
   Evento,
@@ -21,6 +22,7 @@ import {
   Lote,
   LoteVitrine,
   MotivoFalha,
+  PaginaCompradores,
   RegiaoCompradores,
   ResumoVendas,
 } from '../models';
@@ -187,6 +189,37 @@ export class TicketMockService {
         .sort((a, b) => b.ingressos - a.ingressos);
 
       return of<readonly RegiaoCompradores[]>(regioes);
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /**
+   * Base de compradores para fidelização e remarketing.
+   * Busca e paginação acontecem "no servidor" (aqui, no mock) — a UI nunca
+   * recebe a base inteira, do mesmo jeito que será com o Supabase.
+   */
+  obterCompradores(consulta: ConsultaCompradores): Observable<PaginaCompradores> {
+    return defer(() => {
+      const termo = consulta.busca.trim().toLowerCase();
+      const filtrados = termo
+        ? this.compradores.filter((c) =>
+            [c.nome, c.email, c.whatsapp, c.bairro, c.cidade].some((campo) =>
+              campo.toLowerCase().includes(termo),
+            ),
+          )
+        : this.compradores.slice();
+
+      const ordenados = filtrados.sort((a, b) => b.criadoEm.localeCompare(a.criadoEm));
+      const tamanho = Math.max(1, consulta.tamanhoPagina);
+      const totalPaginas = Math.max(1, Math.ceil(ordenados.length / tamanho));
+      const pagina = Math.min(Math.max(1, consulta.pagina), totalPaginas);
+      const inicio = (pagina - 1) * tamanho;
+
+      return of<PaginaCompradores>({
+        itens: ordenados.slice(inicio, inicio + tamanho),
+        total: ordenados.length,
+        pagina,
+        totalPaginas,
+      });
     }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
   }
 

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { PainelStore } from '../../core/state/painel-store';
 import { DashboardVendas } from '../../ui/organisms/dashboard-vendas';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
+import { ListaClientes } from '../../ui/organisms/lista-clientes';
 import { RelatorioRegioes } from '../../ui/organisms/relatorio-regioes';
 import { AdminTemplate, SecaoAdmin } from '../../ui/templates/admin-template';
 
@@ -13,7 +14,7 @@ const SECOES: readonly SecaoAdmin[] = [
 
 @Component({
   selector: 'app-admin-page',
-  imports: [AdminTemplate, LoadingFullscreen, DashboardVendas, RelatorioRegioes],
+  imports: [AdminTemplate, LoadingFullscreen, DashboardVendas, RelatorioRegioes, ListaClientes],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-loading-fullscreen [visivel]="painel.carregando()" mensagem="Consolidando as vendas..." />
@@ -44,7 +45,12 @@ const SECOES: readonly SecaoAdmin[] = [
           />
         }
         @case ('clientes') {
-          <p class="text-sm text-ink-muted">Base de clientes (próxima tarefa).</p>
+          <app-lista-clientes
+            [pagina]="painel.clientes()"
+            [carregando]="painel.carregandoClientes()"
+            (buscar)="painel.carregarClientes({ busca: $event, pagina: 1 })"
+            (irParaPagina)="painel.carregarClientes({ pagina: $event })"
+          />
         }
       }
     </app-admin-template>
@@ -73,6 +79,10 @@ export class AdminPage implements OnInit {
 
     if (id === 'regioes') {
       this.painel.carregarRegioes();
+    }
+
+    if (id === 'clientes' && !this.painel.clientes()) {
+      this.painel.carregarClientes({ pagina: 1 });
     }
   }
 }

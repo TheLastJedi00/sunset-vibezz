@@ -38,5 +38,5 @@ Spec de referência: `.claude/specs/001 - MVC.md`
 - [x] Criar layout base do painel admin com aside animado (`animate-enter`/`animate-leave`)
 - [x] Implementar dashboard de vendas (total de ingressos, receita bruta, lote ativo) com skeletons
 - [x] Criar relatório de inteligência geográfica agregando CEP/Bairro dos compradores
-- [ ] Criar listagem da base de clientes (nome, e-mail, WhatsApp) com busca e paginação mockada
+- [x] Criar listagem da base de clientes (nome, e-mail, WhatsApp) com busca e paginação mockada
 - [ ] Validar responsividade do painel no mobile
