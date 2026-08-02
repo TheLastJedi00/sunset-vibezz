@@ -99,6 +99,28 @@ const PASSOS = ['Ingressos', 'Seus dados', 'Pagamento'] as const;
     >
       @let lote = store.loteAtivo();
 
+      @if (falha(); as recusa) {
+        <div
+          class="flex animate-enter flex-col gap-3 rounded-2xl border border-red-400/35 bg-red-500/10 px-4 py-4"
+          role="alert"
+        >
+          <p class="text-sm text-red-100">{{ recusa.mensagem }}</p>
+
+          @if (viradaDeLote()) {
+            <p class="text-xs text-red-200/80">
+              @if (lote) {
+                O lote em venda agora é o {{ lote.nome }}, a
+                {{ lote.totalCentavos / 100 | currency: 'BRL' }}.
+              }
+            </p>
+
+            <app-button variant="outline" (pressed)="recomecar()">
+              Revisar pedido com o lote atual
+            </app-button>
+          }
+        </div>
+      }
+
       @if (lote) {
         @switch (passo()) {
           @case (1) {
@@ -227,6 +249,18 @@ export class CheckoutPage implements OnInit {
     return pedido?.sucesso ? pedido : null;
   });
 
+  /** Pedido que voltou recusado — orienta o comprador em vez de só falhar. */
+  protected readonly falha = computed(() => {
+    const pedido = this.store.ultimoPedido();
+    return pedido && !pedido.sucesso ? pedido : null;
+  });
+
+  /** Recusa causada pela virada do lote (preço/estoque mudaram no meio do caminho). */
+  protected readonly viradaDeLote = computed(() => {
+    const motivo = this.falha()?.motivoFalha;
+    return motivo === 'lote_encerrado' || motivo === 'estoque_insuficiente';
+  });
+
   protected readonly temLoteAtivo = computed(() => this.store.loteAtivo() !== null);
 
   protected readonly rotuloDoRodape = computed(() => {
@@ -319,6 +353,13 @@ export class CheckoutPage implements OnInit {
     this.passo.set(1);
     this.pixCopiado.set(false);
     this.irParaVitrine();
+  }
+
+  /** Volta ao início já com o lote novo carregado, sem perder os dados digitados. */
+  protected recomecar(): void {
+    this.store.limparPedido();
+    this.store.limparErro();
+    this.passo.set(1);
   }
 
   protected copiarPix(codigo: string): void {
