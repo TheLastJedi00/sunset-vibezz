@@ -21,6 +21,7 @@ import {
   Lote,
   LoteVitrine,
   MotivoFalha,
+  RegiaoCompradores,
   ResumoVendas,
 } from '../models';
 
@@ -150,6 +151,43 @@ export class TicketMockService {
           })),
       ),
     ).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
+  }
+
+  /**
+   * Inteligência geográfica: cruza o CEP/bairro informado no checkout para
+   * mostrar de onde vem o público — é o que baratear a mídia da próxima edição.
+   */
+  obterRegioes(): Observable<readonly RegiaoCompradores[]> {
+    return defer(() => {
+      const totalIngressos = this.compradores.reduce((soma, c) => soma + c.ingressosComprados, 0);
+      const porRegiao = new Map<string, RegiaoCompradores>();
+
+      for (const comprador of this.compradores) {
+        const chave = `${comprador.bairro}|${comprador.cidade}|${comprador.uf}`;
+        const atual = porRegiao.get(chave);
+
+        porRegiao.set(chave, {
+          bairro: comprador.bairro,
+          cidade: comprador.cidade,
+          uf: comprador.uf,
+          compradores: (atual?.compradores ?? 0) + 1,
+          ingressos: (atual?.ingressos ?? 0) + comprador.ingressosComprados,
+          receitaCentavos: (atual?.receitaCentavos ?? 0) + comprador.totalGastoCentavos,
+          participacao: 0,
+        });
+      }
+
+      const regioes = [...porRegiao.values()]
+        .map((regiao) => ({
+          ...regiao,
+          participacao: totalIngressos
+            ? Math.round((regiao.ingressos / totalIngressos) * 1000) / 10
+            : 0,
+        }))
+        .sort((a, b) => b.ingressos - a.ingressos);
+
+      return of<readonly RegiaoCompradores[]>(regioes);
+    }).pipe(comLatencia(LATENCIA_BUSCA, this.fator));
   }
 
   /** Snapshot ordenado dos lotes, já enriquecido com os dados de urgência da UI. */

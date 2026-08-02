@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { PainelStore } from '../../core/state/painel-store';
 import { DashboardVendas } from '../../ui/organisms/dashboard-vendas';
 import { LoadingFullscreen } from '../../ui/organisms/loading-fullscreen';
+import { RelatorioRegioes } from '../../ui/organisms/relatorio-regioes';
 import { AdminTemplate, SecaoAdmin } from '../../ui/templates/admin-template';
 
 const SECOES: readonly SecaoAdmin[] = [
@@ -12,7 +13,7 @@ const SECOES: readonly SecaoAdmin[] = [
 
 @Component({
   selector: 'app-admin-page',
-  imports: [AdminTemplate, LoadingFullscreen, DashboardVendas],
+  imports: [AdminTemplate, LoadingFullscreen, DashboardVendas, RelatorioRegioes],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-loading-fullscreen [visivel]="painel.carregando()" mensagem="Consolidando as vendas..." />
@@ -20,7 +21,7 @@ const SECOES: readonly SecaoAdmin[] = [
     <app-admin-template
       [secoes]="secoes"
       [secaoAtiva]="secao()"
-      (selecionar)="secao.set($event)"
+      (selecionar)="trocarSecao($event)"
     >
       <div class="flex flex-col gap-2">
         <h1 class="font-display text-2xl font-black tracking-tight">{{ tituloDaSecao() }}</h1>
@@ -37,7 +38,10 @@ const SECOES: readonly SecaoAdmin[] = [
           />
         }
         @case ('regioes') {
-          <p class="text-sm text-ink-muted">Inteligência geográfica (próxima tarefa).</p>
+          <app-relatorio-regioes
+            [regioes]="painel.regioes()"
+            [carregando]="painel.carregandoRegioes()"
+          />
         }
         @case ('clientes') {
           <p class="text-sm text-ink-muted">Base de clientes (próxima tarefa).</p>
@@ -61,5 +65,14 @@ export class AdminPage implements OnInit {
 
   ngOnInit(): void {
     this.painel.carregarDashboard();
+  }
+
+  /** Cada seção busca seus dados na primeira visita — nada é carregado à toa. */
+  protected trocarSecao(id: string): void {
+    this.secao.set(id);
+
+    if (id === 'regioes') {
+      this.painel.carregarRegioes();
+    }
   }
 }
