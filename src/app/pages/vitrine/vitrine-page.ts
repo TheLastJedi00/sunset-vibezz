@@ -3,12 +3,13 @@ import { Router } from '@angular/router';
 import { LoteVitrine } from '../../core/models';
 import { BilheteriaStore } from '../../core/state/bilheteria-store';
 import { LoteCard } from '../../ui/molecules/lote-card';
+import { BarraCompra } from '../../ui/organisms/barra-compra';
 import { Header } from '../../ui/organisms/header';
 import { Hero } from '../../ui/organisms/hero';
 
 @Component({
   selector: 'app-vitrine-page',
-  imports: [Header, Hero, LoteCard],
+  imports: [Header, Hero, LoteCard, BarraCompra],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-header />
@@ -45,6 +46,10 @@ import { Hero } from '../../ui/organisms/hero';
         </p>
       }
     </main>
+
+    @if (store.loteAtivo(); as ativo) {
+      <app-barra-compra [lote]="ativo" (comprar)="irParaCheckout($event)" />
+    }
   `,
 })
 export class VitrinePage implements OnInit {

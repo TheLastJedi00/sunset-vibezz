@@ -52,6 +52,31 @@ import { Button } from '../atoms/button';
         </div>
 
         @if (ativo()) {
+          <!-- Escassez visual: barra de consumo do lote + alerta na reta final -->
+          <div class="flex flex-col gap-2">
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
+              <div
+                class="h-full rounded-full bg-gradient-to-r from-accent-deep to-accent transition-[width] duration-700"
+                [style.width.%]="l.percentualVendido"
+              ></div>
+            </div>
+
+            <p class="flex items-center justify-between gap-3 text-xs text-ink-muted">
+              <span>{{ l.percentualVendido }}% vendido</span>
+              <span class="tabular-nums">restam {{ l.disponivel }}</span>
+            </p>
+          </div>
+
+          @if (l.acabando) {
+            <p
+              class="flex items-center gap-2 rounded-2xl border border-accent/35 bg-accent/10 px-4 py-3 text-sm font-semibold text-accent-soft animate-enter"
+              role="status"
+            >
+              <span class="size-2 shrink-0 animate-breathe rounded-full bg-accent"></span>
+              Últimos {{ l.disponivel }} ingressos deste lote — depois o preço sobe.
+            </p>
+          }
+
           <p class="text-xs text-ink-muted">
             Sem taxa de conveniência — o valor acima é o que você paga.
           </p>
