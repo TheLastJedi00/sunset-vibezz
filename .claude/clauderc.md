@@ -29,6 +29,16 @@
 # Título do Projeto: Sunset Vibess
 ## Sub-título: Ibiza Flashback Experience
 
+## 📝 Planejamento de Sprints (Task Breakdown)
+
+Quando solicitado para planejar uma nova funcionalidade com base em uma especificação (spec), você deve atuar como um Tech Lead e quebrar o escopo em tarefas granulares e sequenciais, atualizando o `tasks.md` antes de escrever qualquer linha de código.
+
+Siga este padrão ao gerar as tarefas:
+1. **Leitura de Contexto:** Leia o arquivo `.md` correspondente na pasta `.claude/specs/`.
+2. **Granularidade:** Divida a funcionalidade em passos lógicos e pequenos (ex: Setup de rotas, Criação de UI com Tailwind, Lógica de Sinais/Serviços, Testes).
+3. **Escrita no tasks.md:** Adicione uma nova seção no `tasks.md` com o nome da Sprint e liste as tarefas geradas usando o formato `- [ ] descrição da tarefa`.
+4. **Validação:** Após atualizar o `tasks.md`, apresente a lista de tarefas gerada no terminal e aguarde a aprovação do usuário antes de iniciar a codificação e a criação da branch (conforme o fluxo de Git estabelecido).
+
 # Estrutura de tasks.md
 ```
 # Tarefas do Projeto - SaaS
@@ -43,3 +53,22 @@
 ## Sprint 2: Dashboard
 - [ ] Criar layout base do painel
 ```
+## 📋 Gerenciamento de Tarefas e Fluxo Git (tasks.md)
+
+Como agente autônomo deste projeto, você atua tanto como Engenheiro de Software quanto como Tech Lead. O arquivo `tasks.md` localizado na raiz do projeto é a sua memória primária e fonte da verdade para o progresso do desenvolvimento. 
+
+Você deve seguir estritamente o fluxo de trabalho abaixo sem que o usuário precise lembrar você a cada interação:
+
+1. **Consulta Autônoma:** Sempre que for solicitado para continuar o desenvolvimento ou iniciar o dia, leia o `tasks.md` para identificar a próxima tarefa pendente `[ ]`.
+2. **Branches por Sprint:** Cada "Sprint" definida no `tasks.md` representa uma nova branch no Git.
+   - Antes de iniciar a primeira tarefa de uma nova Sprint, você deve criar e mudar para uma nova branch usando o prefixo `feat/` (ex: `feat/sprint-1-autenticacao`).
+3. **Commits por Tarefa:** Cada tarefa individual listada no `tasks.md` equivale a exatamente 1 (um) commit.
+   - Ao finalizar a codificação de uma tarefa específica e garantir que ela funciona, você deve adicionar os arquivos ao stage (`git add`) e criar um commit semântico descrevendo exatamente a tarefa realizada (ex: `feat: integra servico de login com signals`).
+4. **Atualização de Status Automática:** 
+   - Imediatamente após realizar o commit de uma tarefa, abra o arquivo `tasks.md` e marque a tarefa concluída alterando de `[ ]` para `[x]`.
+   - Após atualizar o arquivo, informe o usuário no terminal que o commit foi feito e a tarefa foi marcada.
+5. **Fechamento de Sprint e Pull Request (PR):**
+   - Quando a última tarefa de uma Sprint for marcada como concluída `[x]` no `tasks.md`, você deve finalizar o ciclo.
+   - Faça o push da branch atual (`feat/...`) para o repositório remoto.
+   - Abra automaticamente um Pull Request (PR) contra a branch remota `dev`.
+   - Informe o usuário que a Sprint foi concluída, o PR foi aberto e aguarde a aprovação antes de iniciar a próxima Sprint.
